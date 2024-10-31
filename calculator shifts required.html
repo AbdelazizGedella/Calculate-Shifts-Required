@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Shift Duty Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        .results {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .result-box {
+            background-color: #e7f3fe;
+            border: 1px solid #b8daff;
+            border-radius: 5px;
+            padding: 10px;
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        .result-box:nth-child(odd) {
+            background-color: #d1ecf1;
+        }
+    </style>
+</head>
+<body>
+    <h2>Day Shift Duty Calculator</h2>
+
+    <form id="shiftForm">
+        <label for="daysInMonth">Enter Days in Month:</label>
+        <input type="number" id="daysInMonth" required><br>
+
+        <label for="leaveDays">Enter Leave Days:</label>
+        <input type="number" id="leaveDays" required><br>
+
+        <label for="workingHours">Select Contract Working Hours:</label>
+        <select id="workingHours" required>
+            <option value="36">36 hours</option>
+            <option value="48">48 hours</option>
+        </select><br>
+
+        <label for="shiftLength">Select Shift Length:</label>
+        <select id="shiftLength" required>
+            <option value="8">8 hours</option>
+            <option value="12">12 hours</option>
+        </select><br>
+
+        <button type="button" onclick="calculateShifts()">Calculate</button>
+    </form>
+
+    <h3>Results:</h3>
+    <div class="results" id="result"></div>
+
+    <script>
+        function calculateShifts() {
+            const daysInMonth = parseInt(document.getElementById('daysInMonth').value);
+            const leaveDays = parseInt(document.getElementById('leaveDays').value);
+            const workingHours = parseInt(document.getElementById('workingHours').value);
+            const shiftLength = parseInt(document.getElementById('shiftLength').value);
+
+            const availableDays = daysInMonth - leaveDays;
+            const weeksRequired = availableDays / 7;
+            const totalRequiredHours = weeksRequired * workingHours;
+            const shiftsRequired = totalRequiredHours / shiftLength;
+
+            document.getElementById('result').innerHTML = `
+                <div class="result-box">Available Working Days: ${availableDays}</div>
+                <div class="result-box">Weeks Required: ${weeksRequired.toFixed(2)}</div>
+                <div class="result-box">Total Working Hours Needed: ${totalRequiredHours.toFixed(2)}</div>
+                <div class="result-box">Number of Shifts Required: ${shiftsRequired.toFixed(2)}</div>
+            `;
+        }
+    </script>
+</body>
+</html>
