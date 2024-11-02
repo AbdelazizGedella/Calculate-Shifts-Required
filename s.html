@@ -61,15 +61,16 @@
             summaryBody.innerHTML = ''; // Clear previous summary
 
             const shiftsPerNurse = 18; // Each nurse will work 18 shifts total
-            const staffCount = Math.ceil((minStaffPerShift * days) / 4); // Calculate required staff based on minStaffPerShift
-            const staff = Array.from({ length: staffCount }, (_, i) => `Nurse ${i + 1}`); // Create staff names
+            const shiftsPerWeek = 4; // Maximum shifts per week
+            const totalStaffNeeded = Math.ceil(minStaffPerShift * days / shiftsPerWeek); // Calculate required staff based on minStaffPerShift
+            const staff = Array.from({ length: totalStaffNeeded }, (_, i) => `Nurse ${i + 1}`); // Create staff names
             const nurseShifts = {}; // Track shifts for each nurse
             const lastShift = {}; // Track last shift day for each nurse
 
             // Initialize the shift count for each nurse
             for (let nurse of staff) {
                 nurseShifts[nurse] = { shifts: 0 };
-                lastShift[nurse] = null; // Track last shift day
+                lastShift[nurse] = { lastDay: null, lastNight: null }; // Track last shift day
             }
 
             let currentWeek = 1;
@@ -84,10 +85,12 @@
                     let dayNurse = null;
                     for (let nurse of staff) {
                         if (nurseShifts[nurse].shifts < shiftsPerNurse && 
-                            lastShift[nurse] !== dayCount) { // Prevent working consecutive shifts
+                            (lastShift[nurse].lastDay !== dayCount) && // Prevent working consecutive day shifts
+                            (lastShift[nurse].lastNight !== dayCount - 1) // Prevent transitioning from night to day shift
+                        ) {
                             dayNurse = nurse;
                             nurseShifts[nurse].shifts++;
-                            lastShift[nurse] = dayCount; // Set last shift day
+                            lastShift[nurse].lastDay = dayCount; // Set last day shift
                             break;
                         }
                     }
@@ -101,11 +104,12 @@
                     let nightNurse = null;
                     for (let nurse of staff) {
                         if (nurseShifts[nurse].shifts < shiftsPerNurse && 
-                            lastShift[nurse] !== dayCount && // Prevent working consecutive shifts
-                            lastShift[nurse] !== dayCount - 1) { // Prevent transitioning from night to day
+                            (lastShift[nurse].lastNight !== dayCount) && // Prevent working consecutive night shifts
+                            (lastShift[nurse].lastDay !== dayCount - 1) // Prevent transitioning from day to night shift
+                        ) {
                             nightNurse = nurse;
                             nurseShifts[nurse].shifts++;
-                            lastShift[nurse] = dayCount; // Set last shift day
+                            lastShift[nurse].lastNight = dayCount; // Set last night shift
                             break;
                         }
                     }
