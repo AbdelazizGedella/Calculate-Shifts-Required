@@ -27,9 +27,21 @@
     <table id="schedule-table">
         <thead>
             <tr>
+                <th>Week</th>
                 <th>Day</th>
                 <th>Day Nurse</th>
                 <th>Night Nurse</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h3>Shift Summary</h3>
+    <table id="summary-table">
+        <thead>
+            <tr>
+                <th>Nurse</th>
+                <th>Shifts Worked</th>
             </tr>
         </thead>
         <tbody></tbody>
@@ -49,38 +61,44 @@
             }
 
             const tableBody = document.querySelector('#schedule-table tbody');
+            const summaryBody = document.querySelector('#summary-table tbody');
             tableBody.innerHTML = '';  // Clear previous schedule
+            summaryBody.innerHTML = ''; // Clear previous summary
 
             const shiftsPerNurse = 18; // Each nurse will work between 17 and 18 shifts total
-            const maxHoursPerWeek = 48; // Max hours per week
-            const hoursPerShift = 12; // Each shift is 12 hours
-            const shiftsPerWeek = maxHoursPerWeek / hoursPerShift; // Shifts per week
-
-            const schedule = [];
+            const shiftsPerWeek = 4; // Maximum shifts per week
             const staff = Array.from({ length: staffCount }, (_, i) => `Nurse ${i + 1}`); // Create staff names
             const nurseShifts = {}; // Track shifts for each nurse
 
             // Initialize the shift count for each nurse
             for (let nurse of staff) {
-                nurseShifts[nurse] = { day: 0, night: 0, total: 0 };
+                nurseShifts[nurse] = { shifts: 0, shiftsPerWeek: 0 };
             }
 
+            let currentWeek = 1;
             for (let dayCount = 1; dayCount <= days; dayCount++) {
+                // Reset weekly shifts counter every new week
+                if ((dayCount - 1) % 7 === 0 && dayCount > 1) {
+                    for (let nurse of staff) {
+                        nurseShifts[nurse].shiftsPerWeek = 0;
+                    }
+                    currentWeek++;
+                }
+
                 // Assign nurses for the day shift
                 for (let assigned = 0; assigned < minStaffPerShift; assigned++) {
                     let dayNurse = null;
                     for (let nurse of staff) {
-                        if (nurseShifts[nurse].day < shiftsPerNurse / 2 && 
-                            nurseShifts[nurse].total < shiftsPerNurse &&
-                            (nurseShifts[nurse].total < shiftsPerWeek || nurseShifts[nurse].total % shiftsPerWeek < shiftsPerNurse / 2)) {
+                        if (nurseShifts[nurse].shifts < shiftsPerNurse && 
+                            nurseShifts[nurse].shiftsPerWeek < shiftsPerWeek) {
                             dayNurse = nurse;
-                            nurseShifts[nurse].day++;
-                            nurseShifts[nurse].total++;
+                            nurseShifts[nurse].shifts++;
+                            nurseShifts[nurse].shiftsPerWeek++;
                             break;
                         }
                     }
                     if (dayNurse) {
-                        schedule.push({ day: dayCount, dayNurse: dayNurse });
+                        tableBody.insertAdjacentHTML('beforeend', `<tr><td>${currentWeek}</td><td>${dayCount}</td><td>${dayNurse}</td>`);
                     }
                 }
 
@@ -88,27 +106,24 @@
                 for (let assigned = 0; assigned < minStaffPerShift; assigned++) {
                     let nightNurse = null;
                     for (let nurse of staff) {
-                        if (nurseShifts[nurse].night < shiftsPerNurse / 2 && 
-                            nurseShifts[nurse].total < shiftsPerNurse &&
-                            (nurseShifts[nurse].total < shiftsPerWeek || nurseShifts[nurse].total % shiftsPerWeek < shiftsPerNurse / 2)) {
+                        if (nurseShifts[nurse].shifts < shiftsPerNurse && 
+                            nurseShifts[nurse].shiftsPerWeek < shiftsPerWeek) {
                             nightNurse = nurse;
-                            nurseShifts[nurse].night++;
-                            nurseShifts[nurse].total++;
+                            nurseShifts[nurse].shifts++;
+                            nurseShifts[nurse].shiftsPerWeek++;
                             break;
                         }
                     }
                     if (nightNurse) {
-                        schedule[schedule.length - 1].nightNurse = nightNurse; // Assign the night nurse to the last day's entry
+                        tableBody.lastChild.innerHTML += `<td>${nightNurse}</td></tr>`; // Add night nurse to the last day's entry
                     }
                 }
             }
 
-            // Render the schedule in the table
-            schedule.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${item.day}</td><td>${item.dayNurse}</td><td>${item.nightNurse || 'N/A'}</td>`;
-                tableBody.appendChild(row);
-            });
+            // Render the summary of shifts per nurse
+            for (let nurse of staff) {
+                summaryBody.insertAdjacentHTML('beforeend', `<tr><td>${nurse}</td><td>${nurseShifts[nurse].shifts}</td></tr>`);
+            }
         }
     </script>
 </body>
