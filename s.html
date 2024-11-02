@@ -16,13 +16,10 @@
     <label for="days">Enter the number of days for the schedule:</label>
     <input type="number" id="days" min="1" max="31" placeholder="Enter days"><br><br>
     
-    <label for="staffCount">Enter the number of staff:</label>
-    <input type="number" id="staffCount" min="2" placeholder="Enter number of staff"><br><br>
-
     <label for="minStaffPerShift">Enter minimum staff required per shift:</label>
     <input type="number" id="minStaffPerShift" min="1" placeholder="Minimum staff per shift"><br><br>
     
-    <button onclick="generateSchedule()">Generate Rota</button>
+    <button onclick="generateSchedule()">Generate Schedule</button>
 
     <table id="schedule-table">
         <thead>
@@ -50,13 +47,11 @@
     <script>
         function generateSchedule() {
             const days = parseInt(document.getElementById('days').value);
-            const staffCount = parseInt(document.getElementById('staffCount').value);
             const minStaffPerShift = parseInt(document.getElementById('minStaffPerShift').value);
 
             if (isNaN(days) || days < 1 || days > 31 || 
-                isNaN(staffCount) || staffCount < minStaffPerShift || 
                 isNaN(minStaffPerShift) || minStaffPerShift < 1) {
-                alert("Please enter valid numbers for days, staff, and minimum staff per shift.");
+                alert("Please enter valid numbers for days and minimum staff per shift.");
                 return;
             }
 
@@ -65,15 +60,15 @@
             tableBody.innerHTML = '';  // Clear previous schedule
             summaryBody.innerHTML = ''; // Clear previous summary
 
-            const shiftsPerNurse = 18; // Each nurse will work between 17 and 18 shifts total
-            const shiftsPerWeek = 3; // Maximum shifts per week
+            const shiftsPerNurse = 18; // Each nurse will work 18 shifts total
+            const staffCount = Math.ceil((minStaffPerShift * days) / 4); // Calculate required staff based on minStaffPerShift
             const staff = Array.from({ length: staffCount }, (_, i) => `Nurse ${i + 1}`); // Create staff names
             const nurseShifts = {}; // Track shifts for each nurse
             const lastShift = {}; // Track last shift day for each nurse
 
             // Initialize the shift count for each nurse
             for (let nurse of staff) {
-                nurseShifts[nurse] = { shifts: 0, shiftsPerWeek: 0 };
+                nurseShifts[nurse] = { shifts: 0 };
                 lastShift[nurse] = null; // Track last shift day
             }
 
@@ -81,9 +76,6 @@
             for (let dayCount = 1; dayCount <= days; dayCount++) {
                 // Reset weekly shifts counter every new week
                 if ((dayCount - 1) % 7 === 0 && dayCount > 1) {
-                    for (let nurse of staff) {
-                        nurseShifts[nurse].shiftsPerWeek = 0;
-                    }
                     currentWeek++;
                 }
 
@@ -91,12 +83,10 @@
                 for (let assigned = 0; assigned < minStaffPerShift; assigned++) {
                     let dayNurse = null;
                     for (let nurse of staff) {
-                        if (nurseShifts[nurse].shifts < shiftsPerNurse &&
-                            nurseShifts[nurse].shiftsPerWeek < shiftsPerWeek &&
+                        if (nurseShifts[nurse].shifts < shiftsPerNurse && 
                             lastShift[nurse] !== dayCount) { // Prevent working consecutive shifts
                             dayNurse = nurse;
                             nurseShifts[nurse].shifts++;
-                            nurseShifts[nurse].shiftsPerWeek++;
                             lastShift[nurse] = dayCount; // Set last shift day
                             break;
                         }
@@ -111,12 +101,10 @@
                     let nightNurse = null;
                     for (let nurse of staff) {
                         if (nurseShifts[nurse].shifts < shiftsPerNurse && 
-                            nurseShifts[nurse].shiftsPerWeek < shiftsPerWeek &&
                             lastShift[nurse] !== dayCount && // Prevent working consecutive shifts
                             lastShift[nurse] !== dayCount - 1) { // Prevent transitioning from night to day
                             nightNurse = nurse;
                             nurseShifts[nurse].shifts++;
-                            nurseShifts[nurse].shiftsPerWeek++;
                             lastShift[nurse] = dayCount; // Set last shift day
                             break;
                         }
