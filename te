@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Site</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #001f3f; /* Dark blue background */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+        .btn-custom {
+            width: 100%;
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Master Navigation</h1>
+    <p>Select a page to navigate:</p>
+
+    <!-- Navigation Buttons -->
+    <a href="manpower_plan.html" class="btn btn-primary btn-custom">Manpower Plan Budgeting</a>
+    <a href="vacation_plan.html" class="btn btn-secondary btn-custom">Vacation Planning</a>
+    <a href="report.html" class="btn btn-success btn-custom">Reports</a>
+    <a href="settings.html" class="btn btn-warning btn-custom">Settings</a>
+
+    <!-- Credits Button -->
+    <a href="https://www.linkedin.com/in/abdelaziz-ibrahim-gedeleila-773b2b141" target="_blank" class="btn btn-info btn-custom">Credits</a>
+</div>
+
+<!-- Bootstrap JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
