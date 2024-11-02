@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manpower Plan Budgeting</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            max-width: 400px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        label, input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        .result {
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Manpower Plan Budgeting</h2>
+
+    <label for="staffPerShift">Number of staff required per shift:</label>
+    <input type="number" id="staffPerShift" placeholder="Enter the number of staff" required>
+
+    <label for="shiftType">Shift type:</label>
+    <select id="shiftType">
+        <option value="12">12 hours</option>
+        <option value="8">8 hours</option>
+    </select>
+
+    <button onclick="calculateStaff()">Calculate Monthly Requirement</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function calculateStaff() {
+        const staffPerShift = parseInt(document.getElementById('staffPerShift').value);
+        const shiftType = parseInt(document.getElementById('shiftType').value);
+        
+        if (isNaN(staffPerShift) || staffPerShift <= 0) {
+            alert("Please enter a valid number of staff per shift.");
+            return;
+        }
+        
+        // Calculate shifts required per day
+        let shiftsPerDay = (24 / shiftType) * staffPerShift;
+
+        // Calculate monthly requirement
+        let monthlyRequirement = shiftsPerDay * 30.5;
+        
+        document.getElementById('result').innerText = `Total staff required for the month: ${monthlyRequirement}`;
+    }
+</script>
+
+</body>
+</html>
