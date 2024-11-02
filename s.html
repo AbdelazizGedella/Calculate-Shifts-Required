@@ -51,9 +51,10 @@
             const tableBody = document.querySelector('#schedule-table tbody');
             tableBody.innerHTML = '';  // Clear previous schedule
 
-            const shiftsPerNurse = 18; // Each nurse will work 18 shifts total
+            const shiftsPerNurse = 18; // Each nurse will work between 17 and 18 shifts total
             const maxHoursPerWeek = 48; // Max hours per week
             const hoursPerShift = 12; // Each shift is 12 hours
+            const shiftsPerWeek = maxHoursPerWeek / hoursPerShift; // Shifts per week
 
             const schedule = [];
             const staff = Array.from({ length: staffCount }, (_, i) => `Nurse ${i + 1}`); // Create staff names
@@ -69,7 +70,9 @@
                 for (let assigned = 0; assigned < minStaffPerShift; assigned++) {
                     let dayNurse = null;
                     for (let nurse of staff) {
-                        if (nurseShifts[nurse].day < shiftsPerNurse / 2 && nurseShifts[nurse].total < maxHoursPerWeek / hoursPerShift) {
+                        if (nurseShifts[nurse].day < shiftsPerNurse / 2 && 
+                            nurseShifts[nurse].total < shiftsPerNurse &&
+                            (nurseShifts[nurse].total < shiftsPerWeek || nurseShifts[nurse].total % shiftsPerWeek < shiftsPerNurse / 2)) {
                             dayNurse = nurse;
                             nurseShifts[nurse].day++;
                             nurseShifts[nurse].total++;
@@ -85,7 +88,9 @@
                 for (let assigned = 0; assigned < minStaffPerShift; assigned++) {
                     let nightNurse = null;
                     for (let nurse of staff) {
-                        if (nurseShifts[nurse].night < shiftsPerNurse / 2 && nurseShifts[nurse].total < maxHoursPerWeek / hoursPerShift) {
+                        if (nurseShifts[nurse].night < shiftsPerNurse / 2 && 
+                            nurseShifts[nurse].total < shiftsPerNurse &&
+                            (nurseShifts[nurse].total < shiftsPerWeek || nurseShifts[nurse].total % shiftsPerWeek < shiftsPerNurse / 2)) {
                             nightNurse = nurse;
                             nurseShifts[nurse].night++;
                             nurseShifts[nurse].total++;
