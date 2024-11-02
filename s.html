@@ -14,7 +14,14 @@
 <body>
     <h2>Nursing Schedule Generator</h2>
     <label for="days">Enter the number of days for the schedule:</label>
-    <input type="number" id="days" min="1" max="31" placeholder="Enter days">
+    <input type="number" id="days" min="1" max="31" placeholder="Enter days"><br><br>
+    
+    <label for="staffCount">Enter the number of staff:</label>
+    <input type="number" id="staffCount" min="1" placeholder="Enter number of staff"><br><br>
+    
+    <label for="minStaffPerShift">Enter minimum staff required per shift:</label>
+    <input type="number" id="minStaffPerShift" min="1" placeholder="Minimum staff per shift"><br><br>
+    
     <button onclick="generateSchedule()">Generate Schedule</button>
 
     <table id="schedule-table">
@@ -31,53 +38,56 @@
     <script>
         function generateSchedule() {
             const days = parseInt(document.getElementById('days').value);
-            if (isNaN(days) || days < 1 || days > 31) {
-                alert("Please enter a valid number of days between 1 and 31.");
+            const staffCount = parseInt(document.getElementById('staffCount').value);
+            const minStaffPerShift = parseInt(document.getElementById('minStaffPerShift').value);
+
+            if (isNaN(days) || days < 1 || days > 31 || 
+                isNaN(staffCount) || staffCount < 1 || 
+                isNaN(minStaffPerShift) || minStaffPerShift < 1) {
+                alert("Please enter valid numbers for days, staff, and minimum staff per shift.");
                 return;
             }
 
             const tableBody = document.querySelector('#schedule-table tbody');
             tableBody.innerHTML = '';  // Clear previous schedule
 
-            const staff = ['Nurse 1', 'Nurse 2', 'Nurse 3', 'Nurse 4']; // Sample staff list
             const totalShiftsPerNurse = 18;
-            const maxHoursPerWeek = 48;
             const shiftsPerType = totalShiftsPerNurse / 2; // 9 day shifts, 9 night shifts per nurse
 
             const schedule = [];
+            const staff = Array.from({ length: staffCount }, (_, i) => `Nurse ${i + 1}`); // Create staff names
             let dayCount = 1;
 
-            // Generate a balanced schedule for each nurse
-            for (let i = 0; i < staff.length; i++) {
-                let dayShifts = 0;
-                let nightShifts = 0;
-                let isNightShift = true;
+            // Create a list of shifts to distribute evenly across staff
+            while (dayCount <= days) {
+                for (let shiftType of ['Day', 'Night']) {
+                    // Calculate how many nurses are needed for this shift
+                    let assignedNurses = 0;
+                    
+                    while (assignedNurses < minStaffPerShift && dayCount <= days) {
+                        for (let i = 0; i < staff.length; i++) {
+                            const nurseName = staff[i];
+                            const currentShifts = schedule.filter(shift => shift.staff === nurseName);
+                            const dayShifts = currentShifts.filter(shift => shift.shift === 'Day').length;
+                            const nightShifts = currentShifts.filter(shift => shift.shift === 'Night').length;
 
-                while (dayShifts + nightShifts < totalShiftsPerNurse && dayCount <= days) {
-                    if (isNightShift && nightShifts < shiftsPerType) {
-                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Night' });
-                        nightShifts++;
-                        isNightShift = false;  // Next shift will be Day
-                    } else if (!isNightShift && dayShifts < shiftsPerType) {
-                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Day' });
-                        dayShifts++;
-                        isNightShift = true;  // Next shift will be Night
-                    } else {
-                        // Assign off duty days based on shift transition rules
-                        let offDays = (isNightShift) ? 2 : 1;
-                        for (let off = 0; off < offDays && dayCount <= days; off++) {
-                            schedule.push({ day: dayCount, staff: staff[i], shift: 'Off Duty' });
-                            dayCount++;
+                            // Ensure nurse can take more shifts
+                            if (dayShifts < shiftsPerType && nightShifts < shiftsPerType) {
+                                schedule.push({ day: dayCount, staff: nurseName, shift: shiftType });
+                                assignedNurses++;
+                                
+                                // If reached required staff for this shift, break
+                                if (assignedNurses >= minStaffPerShift) {
+                                    break;
+                                }
+                            }
                         }
-                        continue;
+                        dayCount++;
                     }
-
-                    // Move to the next day
-                    dayCount++;
                 }
             }
 
-            // Render schedule in the table
+            // Render the schedule in the table
             schedule.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${item.day}</td><td>${item.staff}</td><td>${item.shift}</td>`;
