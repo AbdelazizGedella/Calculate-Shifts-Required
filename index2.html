@@ -37,11 +37,24 @@
             margin-top: 15px;
             text-align: center;
         }
+        .thumbnail {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .thumbnail img {
+            width: 100px;
+            height: auto;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="thumbnail">
+        <img src="https://example.com/thumbnail.jpg" alt="Manpower Planning Thumbnail">
+    </div>
+
     <h2>Manpower Plan Budgeting</h2>
 
     <label for="staffPerShift">Number of staff required per shift:</label>
@@ -53,6 +66,9 @@
         <option value="8">8 hours</option>
     </select>
 
+    <label for="averageShifts">Average shifts per month each staff can cover:</label>
+    <input type="number" id="averageShifts" placeholder="e.g., 17.5" step="0.1" required>
+
     <button onclick="calculateStaff()">Calculate Monthly Requirement</button>
 
     <div class="result" id="result"></div>
@@ -62,19 +78,28 @@
     function calculateStaff() {
         const staffPerShift = parseInt(document.getElementById('staffPerShift').value);
         const shiftType = parseInt(document.getElementById('shiftType').value);
+        const averageShifts = parseFloat(document.getElementById('averageShifts').value);
         
         if (isNaN(staffPerShift) || staffPerShift <= 0) {
             alert("Please enter a valid number of staff per shift.");
             return;
         }
         
+        if (isNaN(averageShifts) || averageShifts <= 0) {
+            alert("Please enter a valid number for average shifts per staff.");
+            return;
+        }
+        
         // Calculate shifts required per day
         let shiftsPerDay = (24 / shiftType) * staffPerShift;
 
-        // Calculate monthly requirement
-        let monthlyRequirement = shiftsPerDay * 30.5;
+        // Calculate total shifts required for the month
+        let totalShifts = shiftsPerDay * 30.5;
+
+        // Calculate required staff count
+        let requiredStaffCount = Math.ceil(totalShifts / averageShifts);
         
-        document.getElementById('result').innerText = `Total staff required for the month: ${monthlyRequirement}`;
+        document.getElementById('result').innerText = `Total staff required for the month: ${requiredStaffCount}`;
     }
 </script>
 
