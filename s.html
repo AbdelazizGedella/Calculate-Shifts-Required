@@ -39,44 +39,45 @@
             const tableBody = document.querySelector('#schedule-table tbody');
             tableBody.innerHTML = '';  // Clear previous schedule
 
-            // Sample staff list, replace with actual staff names if available
-            const staff = ['Nurse 1', 'Nurse 2', 'Nurse 3', 'Nurse 4'];
-            const shifts = ['Day', 'Night'];  // 12-hour shifts
+            const staff = ['Nurse 1', 'Nurse 2', 'Nurse 3', 'Nurse 4']; // Sample staff list
+            const totalShiftsPerNurse = 18;
+            const maxHoursPerWeek = 48;
+            const shiftsPerType = totalShiftsPerNurse / 2; // 9 day shifts, 9 night shifts per nurse
+
             const schedule = [];
-            const maxWeeklyHours = 48;
-            const shiftsPerStaff = 18;
-            
             let dayCount = 1;
+
+            // Generate a balanced schedule for each nurse
             for (let i = 0; i < staff.length; i++) {
-                let workedHours = 0;
-                let shiftType = 'Day';
+                let dayShifts = 0;
+                let nightShifts = 0;
+                let isNightShift = true;
 
-                for (let j = 0; j < days; j++) {
-                    if (workedHours >= maxWeeklyHours) break;
-
-                    // Assign shift and alternate day/night
-                    if (j % 2 === 0) {
-                        shiftType = 'Day';
+                while (dayShifts + nightShifts < totalShiftsPerNurse && dayCount <= days) {
+                    if (isNightShift && nightShifts < shiftsPerType) {
+                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Night' });
+                        nightShifts++;
+                        isNightShift = false;  // Next shift will be Day
+                    } else if (!isNightShift && dayShifts < shiftsPerType) {
+                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Day' });
+                        dayShifts++;
+                        isNightShift = true;  // Next shift will be Night
                     } else {
-                        shiftType = 'Night';
+                        // Assign off duty days based on shift transition rules
+                        let offDays = (isNightShift) ? 2 : 1;
+                        for (let off = 0; off < offDays && dayCount <= days; off++) {
+                            schedule.push({ day: dayCount, staff: staff[i], shift: 'Off Duty' });
+                            dayCount++;
+                        }
+                        continue;
                     }
 
-                    // Apply off-duty rules based on shift change
-                    if (shiftType === 'Night' && dayCount % 3 === 0) {
-                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Off Duty' });
-                    } else if (shiftType === 'Day' && dayCount % 4 === 0) {
-                        schedule.push({ day: dayCount, staff: staff[i], shift: 'Off Duty' });
-                    } else {
-                        schedule.push({ day: dayCount, staff: staff[i], shift: shiftType });
-                        workedHours += 12;
-                    }
-
+                    // Move to the next day
                     dayCount++;
-                    if (dayCount > days) break;
                 }
             }
 
-            // Render schedule
+            // Render schedule in the table
             schedule.forEach(item => {
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${item.day}</td><td>${item.staff}</td><td>${item.shift}</td>`;
