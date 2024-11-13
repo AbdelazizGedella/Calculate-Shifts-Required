@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telford Method Nursing Staff Calculator</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        input {
+            background-color: #2c2c2c;
+            color: #ffffff;
+        }
+        button {
+            background-color: #4CAF50;
+            color: #ffffff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Telford Method Nursing Staff Calculator</h2>
+        <label for="high">Number of High-Dependency Patients:</label>
+        <input type="number" id="high" min="0" placeholder="Enter number of high-dependency patients">
+
+        <label for="medium">Number of Medium-Dependency Patients:</label>
+        <input type="number" id="medium" min="0" placeholder="Enter number of medium-dependency patients">
+
+        <label for="low">Number of Low-Dependency Patients:</label>
+        <input type="number" id="low" min="0" placeholder="Enter number of low-dependency patients">
+
+        <label for="hoursPerShift">Hours per Nurse per Shift:</label>
+        <input type="number" id="hoursPerShift" min="1" placeholder="Enter hours per shift (e.g., 12)">
+
+        <label for="nonProductive">Non-Productive Time (%):</label>
+        <input type="number" id="nonProductive" min="0" max="100" placeholder="Enter non-productive time (e.g., 15)">
+
+        <button onclick="calculateStaff()">Calculate Required Nursing Staff</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function calculateStaff() {
+            let high = parseInt(document.getElementById('high').value) || 0;
+            let medium = parseInt(document.getElementById('medium').value) || 0;
+            let low = parseInt(document.getElementById('low').value) || 0;
+            let hoursPerShift = parseFloat(document.getElementById('hoursPerShift').value) || 12;
+            let nonProductive = parseFloat(document.getElementById('nonProductive').value) || 0;
+
+            // Calculate total nursing hours required per day
+            let totalHours = (high * 6) + (medium * 4) + (low * 2);
+
+            // Adjust for non-productive time
+            totalHours *= (1 + nonProductive / 100);
+
+            // Calculate the number of nurses needed per shift
+            let nursesPerShift = Math.ceil(totalHours / hoursPerShift);
+
+            // Display the result
+            document.getElementById('result').innerHTML = 
+                `<h3>Results:</h3>
+                <p>Total Nursing Hours Required per Day: ${totalHours.toFixed(2)} hours</p>
+                <p>Number of Nurses Needed per Shift: ${nursesPerShift}</p>`;
+        }
+    </script>
+</body>
+</html>
