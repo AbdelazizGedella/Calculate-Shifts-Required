@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weekly Staff Requirement Calculator</title>
+    <title>Weekly Nursing Staff Calculator</title>
     <style>
         body {
             background-color: #121212;
@@ -46,15 +46,15 @@
 </head>
 <body>
     <div class="container">
-        <h2>Weekly Staff Requirement Calculator</h2>
-        <label for="staffPerShift">Number of Staff Required per Shift:</label>
-        <input type="number" id="staffPerShift" min="1" placeholder="Enter number of staff per shift">
+        <h2>Weekly Nursing Staff Calculator</h2>
+        <label for="staffPerShift">Number of Staff Needed per Shift:</label>
+        <input type="number" id="staffPerShift" min="1" placeholder="Enter number of staff needed per shift" required>
 
         <label for="shiftsPerDay">Number of Shifts per Day:</label>
-        <input type="number" id="shiftsPerDay" min="1" placeholder="Enter number of shifts per day (e.g., 3)">
+        <input type="number" id="shiftsPerDay" min="1" placeholder="Enter number of shifts per day (e.g., 2 or 3)" required>
 
-        <label for="daysPerWeek">Number of Days per Week:</label>
-        <input type="number" id="daysPerWeek" min="1" max="7" placeholder="Enter number of days per week (e.g., 7)">
+        <label for="daysPerWeek">Number of Days Covered per Week:</label>
+        <input type="number" id="daysPerWeek" min="1" max="7" value="7" placeholder="Enter number of days per week (default is 7)" required>
 
         <button onclick="calculateWeeklyStaff()">Calculate Weekly Staff Requirement</button>
 
@@ -63,9 +63,14 @@
 
     <script>
         function calculateWeeklyStaff() {
-            let staffPerShift = parseInt(document.getElementById('staffPerShift').value) || 0;
-            let shiftsPerDay = parseInt(document.getElementById('shiftsPerDay').value) || 0;
-            let daysPerWeek = parseInt(document.getElementById('daysPerWeek').value) || 0;
+            let staffPerShift = parseInt(document.getElementById('staffPerShift').value);
+            let shiftsPerDay = parseInt(document.getElementById('shiftsPerDay').value);
+            let daysPerWeek = parseInt(document.getElementById('daysPerWeek').value);
+
+            if (isNaN(staffPerShift) || isNaN(shiftsPerDay) || isNaN(daysPerWeek)) {
+                document.getElementById('result').innerHTML = '<p>Please enter valid numbers for all fields.</p>';
+                return;
+            }
 
             // Calculate total staff needed per week without buffer
             let totalStaffPerWeek = staffPerShift * shiftsPerDay * daysPerWeek;
